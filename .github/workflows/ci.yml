@@ -72,7 +72,9 @@ jobs:
       # tarpaulin.toml configures: --lib, Html+Xml output, coverage/ dir,
       # fail-under=90, and file exclusions.  Passing --config makes the
       # location explicit so this job is not sensitive to working-directory.
-      run: cargo tarpaulin --config tarpaulin.toml
+      # -p scopes the gate to the registry contract; the batch-mint proxy has
+      # its own dedicated test suite in the test job.
+      run: cargo tarpaulin --config tarpaulin.toml -p stellar_wrap_contract
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4

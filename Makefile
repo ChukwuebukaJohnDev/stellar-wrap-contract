@@ -1,13 +1,17 @@
-.PHONY: build test fuzz fuzz-build fmt fmt-check lint doc clean deploy-testnet wasm-build docker-build docker-build-verify coverage
+.PHONY: build test fuzz fuzz-build fmt fmt-check lint doc clean deploy-testnet wasm-build proxy-build docker-build docker-build-verify coverage
 
 # ── Build ────────────────────────────────────────────────────────────────────
 
 ## build: Compile the contract to WASM (release profile, wasm32 target)
 build: wasm-build
 
-## wasm-build: Explicit WASM release build (output: target/wasm32-unknown-unknown/release/*.wasm)
+## wasm-build: Explicit WASM release build for all workspace contracts (output: target/wasm32-unknown-unknown/release/*.wasm)
 wasm-build:
 	cargo build --release --target wasm32-unknown-unknown
+
+## proxy-build: Build only the batch-mint-proxy WASM (output: target/wasm32-unknown-unknown/release/batch_mint_proxy.wasm)
+proxy-build:
+	cargo build --release --target wasm32-unknown-unknown -p batch_mint_proxy
 
 ## soroban-build: Build via the Stellar CLI (alternative to cargo build --target wasm32)
 soroban-build:

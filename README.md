@@ -23,6 +23,18 @@ The contract is split into focused modules:
 
 For detailed bridge architecture and cross-chain workflow, see [docs/bridge-architecture.md](docs/bridge-architecture.md).
 
+## Batch Mint Proxy
+
+In addition to the registry contract, the workspace ships a **Batch Mint Proxy** (`proxy/`, package `batch_mint_proxy`): a lightweight, separately deployable contract that forwards multiple `mint_wrap` calls to the registry **atomically**. If any item in the batch fails (invalid signature, duplicate wrap, opted-out user, paused registry, …), the whole transaction is rolled back — no partial batch is ever committed.
+
+```bash
+# Build both WASM artifacts (registry + proxy)
+make wasm-build
+# Proxy WASM: target/wasm32-unknown-unknown/release/batch_mint_proxy.wasm
+```
+
+The proxy stores no wrap data and adds no privileges: the registry still enforces per-user authorization, Ed25519 signatures, period validation, and duplicate checks on every forwarded call. See [docs/batch-mint-proxy.md](docs/batch-mint-proxy.md) for the full architecture, interface, deployment steps, and security model.
+
 ## Data model
 
 ### `WrapRecord`

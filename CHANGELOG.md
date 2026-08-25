@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- **Batch Mint Proxy contract** (`batch_mint_proxy`, new workspace member under `proxy/`): a separately deployable Soroban contract that forwards multiple `mint_wrap` calls to the wrap registry **atomically**. If any item in a batch fails, the entire batch is rolled back. See [`docs/batch-mint-proxy.md`](docs/batch-mint-proxy.md) for architecture, deployment, and security notes.
+
 ## 0.1.0
 
 ### Contract interface snapshot

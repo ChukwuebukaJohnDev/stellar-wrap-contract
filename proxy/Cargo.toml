@@ -1,0 +1,21 @@
+[package]
+name = "batch_mint_proxy"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[features]
+# Enables the soroban-sdk test utilities required by the unit tests.
+testutils = ["soroban-sdk/testutils"]
+
+[dependencies]
+soroban-sdk = "=27.0.3"
+
+[dev-dependencies]
+# The wrap registry is used in integration tests to deploy the real contract
+# and to construct the canonical signed mint payloads.
+stellar_wrap_contract = { path = "..", features = ["testutils"] }
+ed25519-dalek = { version = "=3.0.0", features = ["rand_core"] }
