@@ -1,5 +1,5 @@
-#![cfg(test)]
-#![allow(dead_code)]
+extern crate std;
+use std::vec;
 
 use std::vec;
 

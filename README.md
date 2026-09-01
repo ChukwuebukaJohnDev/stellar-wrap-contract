@@ -163,6 +163,9 @@ TypeScript signer example.
 | Entrypoint | Auth |
 | --- | --- |
 | `transfer_wrap(from, to, period)` | `from` (charges the configured fee) |
+| `set_transfer_fee(recipient, token, amount)` | admin |
+| `get_transfer_fee()` | — |
+| `clear_transfer_fee()` | admin |
 | `backfill_wrap_periods(user, periods)` | admin |
 
 ### Queries

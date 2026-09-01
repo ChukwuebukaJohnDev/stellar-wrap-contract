@@ -69,10 +69,10 @@ pub const MAX_VERIFY_PAYLOAD_BYTES: usize = 32_768; // 32 KiB
 /// The host `ed25519_verify` primitive cannot produce the contract error: on a
 /// bad signature it traps the VM with an uncatchable `Error(Crypto,
 /// InvalidInput)` host error (soroban-sdk `Crypto::ed25519_verify` discards the
-/// result, so the guest never regains control). Verifying here with the same
-/// pinned `ed25519-dalek` version (3.0.0, `verify_strict`) that
-/// `soroban-env-host` uses reproduces identical acceptance semantics while
-/// keeping the failure inside the contract's error domain.
+/// result, so the guest never regains control). Verifying here reproduces
+/// acceptance semantics inside the contract's error domain at the cost of
+/// ~45.5 KB bytecode overhead. See `SIGNATURE_VERIFICATION_DECISION.md` for full
+/// measurement and architectural trade-off details.
 ///
 /// # Panics
 ///
@@ -92,13 +92,11 @@ fn verify_ed25519(
         .map_err(|_| ContractError::InvalidSignature)?;
     let sig = Signature::from_bytes(&signature.to_array());
 
-    // Heap-allocate a buffer sized to the actual message length so we never
-    // index out of bounds regardless of payload size.
-    let mut msg = vec![0u8; len];
-    message.copy_into_slice(&mut msg);
+    let mut msg = [0u8; MAX_VERIFY_PAYLOAD_BYTES];
+    message.copy_into_slice(&mut msg[..len]);
 
     verifying_key
-        .verify_strict(&msg, &sig)
+        .verify_strict(&msg[..len], &sig)
         .map_err(|_| ContractError::InvalidSignature)
 }
 
@@ -245,6 +243,7 @@ pub fn verify_inbound_bridge_signature(
 #[allow(clippy::too_many_arguments)]
 mod tests {
     extern crate std;
+    use std::vec;
 
     use std::panic::{catch_unwind, AssertUnwindSafe};
 

@@ -358,6 +358,7 @@ fn test_defeated_admin_proposal_is_persisted() {
     });
 
     client.execute_admin_proposal(&proposal_id);
+    let events = decode_events(&env);
 
     // Read events immediately after the generating call; in SDK 27 a later
     // contract invocation clears the previously recorded event buffer.
