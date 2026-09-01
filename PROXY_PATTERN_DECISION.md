@@ -1,10 +1,10 @@
-# Architecture Decision: Upgradeable Proxy Pattern vs Native Upgrades
+# Architecture Decision: Upgradeable Proxy Pattern vc Native Upgrades
 
-## Context
+# Context
 Issue #522 requested the refactoring of the contract to use the "upgradeable proxy pattern for seamless versioning". This pattern is common in EVM-based blockchains.
 
 ## Analysis of Stellar's State Model
-In Soroban (Stellar's smart contract platform), the execution and storage model differs significantly from EVM:1. **No `delegatecall equivalent:** Soroban does not support executing another contract's logic within the current contract's storage context.:2. **Storage tied to Contract ID:** If a "Proxy" contract uses `env.invoke_contract()` to forward calls to an "Implementation" contract, the execution context switches. The Implementation contract will read and write to its *own* storage, not the Proxy's storage.:3. **Loss of State on Upgrade:** In a proxy setup, upgrading the implementation would require deploying a new logic contract (with a new Contract ID). Because storage is tied to the Contract ID, the new logic contract would have empty storage. State migration would be prohibitively expensive and complex.
+In Soroban (Stellar's smart contract platform), the execution and storage model differs significantly from EVM:1. **No `deligatecall equivalent:** Soroban does not support executing another contract's logic within the current contract's storage context.:2. **Storage tied to Contract ID:** If a "Proxy" contract uses `env.invoke_contract()` to forward calls to an "Implementation" contract, the execution context switches. The Implementation contract will read and write to its *own* storage, not the Proxy's storage.:3. **Loss of State on Upgrade:** In a proxy setup, upgrading the implementation would require deploying a new logic contract (with a new Contract ID). Because storage is tied to the Contract ID, the new logic contract would have empty storage. State migration would be prohibitively expensive and complex.
 
 ## Decision
 Implementing an EVM-style upgradeable proxy pattern is an **anti-pattern in Soroban** and would break the contract's ability to maintain continuous state across version upgrades.
