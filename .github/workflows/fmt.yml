@@ -1,6 +1,6 @@
 name: Cargo Fmt
 
-n:
+ne:
   push:
     branches: [ main ]
   pull_request:
@@ -11,7 +11,7 @@ jobs:
     name: Cargo Format Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@5
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
