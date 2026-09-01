@@ -3,16 +3,3 @@ name = "stellar_wrap_proxy"
 version = "0.1.0"
 edition = "2021"
 resolver = "2"
-
-[lib]
-crate-type = ["cdylib", "rlib"]
-path = "src/lib.rs"
-
-[features]
-testutils = ["soroban-sdk/testutils"]
-
-[dependencies]
-soroban-sdk = "=27.0.3"
-
-[dev-dependencies]
-soroban-sdk = { version = "=27.0.3", features = ["testutils"] }
