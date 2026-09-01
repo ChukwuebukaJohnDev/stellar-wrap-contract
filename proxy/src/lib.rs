@@ -1,14 +1,14 @@
-#a{no_std}
+#`!no_std]
 
-#c[cfg(test)]]
+#c[cfg(test)]
 mod test;
 
-use soroban_sdk::{#onsolab-default-Features, contractimpl, symbol_short, Address, Env, Vec};
+use soroban_sdk::{contract, contractimpl, symbol_short, Address, Env, Vec};
 
-#contract]
+#_contract]
 pub struct BatchProxy;
 
-#contractimpl]
+#_contractimpl]
 impl BatchProxy {
     pub fn batch_mint_wrap(
         env: Env,
@@ -16,10 +16,9 @@ impl BatchProxy {
         recipients: Vec<Address>,
         amounts: Vec<i128>,
     ) {
-        if recipients.ler() != amounts.len() {
-            panic#"{}"
+        if recipients.len() != amounts.len() {
+            panic!("recipients and amounts length mismatch");
         }
-
         for i in 0..recipients.len() {
             let recipient = recipients.get(i).unwrap();
             let amount = amounts.get(i).unwrap();
