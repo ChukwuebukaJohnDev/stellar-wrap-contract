@@ -12,18 +12,63 @@ use crate::signature::{construct_inbound_bridge_payload, construct_mint_payload}
 
 fn setup_test_env<'a>(
     env: &'a Env,
-) -> (StellarWrapContractClient<'a>, Address, Address, SigningKey) {
+) -> (
+    StellarWrapContractClient<'a>,
+    Address,
+    SigningKey,
+    SigningKey,
+) {
     let contract_id = env.register(StellarWrapContract, ());
     let client = StellarWrapContractClient::new(env, &contract_id);
 
     let signing_key = SigningKey::from_bytes(&[7u8; 32]);
     let admin_pubkey = BytesN::from_array(env, &signing_key.verifying_key().to_bytes());
     let admin = Address::generate(env);
-    let relayer = Address::generate(env);
+    let relayer_key = SigningKey::from_bytes(&[8u8; 32]);
 
     env.mock_all_auths();
     client.initialize(&admin, &admin_pubkey);
-    (client, admin, relayer, signing_key)
+    (client, admin, relayer_key, signing_key)
+}
+
+fn setup_relayer(
+    env: &Env,
+    client: &StellarWrapContractClient,
+    chain_id: u32,
+    relayer_key: &SigningKey,
+) {
+    let relayer_pubkey = BytesN::from_array(env, &relayer_key.verifying_key().to_bytes());
+    let mut relayers = soroban_sdk::Vec::new(env);
+    relayers.push_back(relayer_pubkey);
+    client.set_bridge_relayers(&chain_id, &relayers, &1);
+}
+
+#[allow(clippy::too_many_arguments)]
+fn single_inbound_sig(
+    env: &Env,
+    relayer_key: &SigningKey,
+    contract: &Address,
+    source_chain: u32,
+    source_nonce: u64,
+    recipient: &Address,
+    period: u64,
+    archetype: &Symbol,
+    data_hash: &BytesN<32>,
+) -> soroban_sdk::Vec<BytesN<64>> {
+    let sig = sign_inbound_payload(
+        env,
+        relayer_key,
+        contract,
+        source_chain,
+        source_nonce,
+        recipient,
+        period,
+        archetype,
+        data_hash,
+    );
+    let mut signatures = soroban_sdk::Vec::new(env);
+    signatures.push_back(sig);
+    signatures
 }
 
 fn setup_relayers(
@@ -896,6 +941,18 @@ fn test_bridge_wrap_in_fresh_recipient_then_mint_wrap_succeeds() {
     let archetype = symbol_short!("bridge");
     let data_hash = BytesN::from_array(&env, &[99u8; 32]);
     let source_nonce = 101u64;
+
+    let signatures = single_inbound_sig(
+        &env,
+        &relayer_key,
+        &client.address,
+        chain_id,
+        source_nonce,
+        &recipient,
+        period1,
+        &archetype,
+        &data_hash,
+    );
 
     // 1. Bridge wrap in for fresh recipient
     setup_single_relayer_bridge_in(

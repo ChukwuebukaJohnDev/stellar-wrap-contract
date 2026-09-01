@@ -18,6 +18,7 @@
 //! compromised. The admin address controls the public-key rotation.
 
 #![no_std]
+#![allow(clippy::too_many_arguments)]
 
 extern crate alloc;
 
