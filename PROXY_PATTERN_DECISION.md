@@ -4,10 +4,7 @@
 Issue #522 requested the refactoring of the contract to use the "upgradeable proxy pattern for seamless versioning". This pattern is common in EVM-based blockchains.
 
 ## Analysis of Stellar's State Model
-In Soroban (Stellar's smart contract platform), the execution and storage model differs significantly from EVM:
-1. **No `delegatecall` equivalent:** Soroban does not support executing another contract's logic within the current contract's storage context.
-2. **Storage tied to Contract ID:** If a "Proxy" contract uses `env.invoke_contract()` to forward calls to an "Implementation" contract, the execution context switches. The Implementation contract will read and write to its *own* storage, not the Proxy's storage.
-3. **Loss of State on Upgrade:** In a proxy setup, upgrading the implementation would require deploying a new logic contract (with a new Contract ID). Because storage is tied to the Contract ID, the new logic contract would have empty storage. State migration would be prohibitively expensive and complex.
+In Soroban (Stellar's smart contract platform), the execution and storage model differs significantly from EVM::1. **No `delegatecall` equivalent:** Soroban does not support executing another contract's logic within the current contract's storage context.:2. **Storage tied to Contract ID:** If a "Proxy" contract uses `env.invoke_contract()` to forward calls to an "Implementation" contract, the execution context switches. The Implementation contract will read and write to its *own* storage, not the Proxy's storage.:3. **Loss of State on Upgrade:** In a proxy setup, upgrading the implementation would require deploying a new logic contract (with a new Contract ID). Because storage is tied to the Contract ID, the new logic contract would have empty storage. State migration would be prohibitively expensive and complex.
 
 ## Decision
 Implementing an EVM-style upgradeable proxy pattern is an **anti-pattern in Soroban** and would break the contract's ability to maintain continuous state across version upgrades.
@@ -15,7 +12,7 @@ Implementing an EVM-style upgradeable proxy pattern is an **anti-pattern in Soro
 Instead, Soroban provides a **native, secure upgrade mechanism**:
 `env.deployer().update_current_contract_wasm(new_wasm_hash)`
 
-This native capability is already fully implemented in `src/admin.rs` (`upgrade` function). It allows the contract logic (WASM) to be updated in-place while retaining the identical Contract ID and all existing persistent/instance storage.
+This native capability is already fully implemented in `src/admin.r`` (`upgrade` function). It allows the contract logic (WASM) to be updated in-place while retaining the identical Contract ID and all existing persistent/instance storage.
 
 ## Batch Proxy for Atomic `mint_wrap`
 To satisfy the requirement of atomically batching multiple `mint_wrap` calls, a new `BatchProxy` contract has been introduced. This proxy is **not** an upgradeable proxy and does not alter the storage ownership model.
