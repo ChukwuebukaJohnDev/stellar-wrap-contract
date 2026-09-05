@@ -130,12 +130,9 @@ pub(crate) fn get_wraps(
 /// without pagination. It is intended for bounded queries of at most
 /// [`MAX_QUERY_RESULTS`] (200) records. Callers with larger datasets should use
 /// the paginated [`get_wraps`] instead to stay within Soroban resource limits.
-///
-/// **Note:** This bound is not yet enforced; the current implementation still
-/// passes `limit = u32::MAX` to [`get_wraps`].
 pub(crate) fn get_all_wraps_for_user(e: Env, user: Address) -> soroban_sdk::Vec<WrapRecord> {
-    // Fetch all wraps by using the maximum possible range.
-    get_wraps(e, user, 0, u32::MAX)
+    // Fetch all wraps up to the maximum query result limit.
+    get_wraps(e, user, 0, MAX_QUERY_RESULTS)
 }
 
 /// Return the configured transfer-fee configuration, or `None` if unset.
@@ -220,7 +217,7 @@ pub(crate) fn contract_version(e: Env) -> u32 {
         .unwrap_or(0)
 }
 
-pub const MAX_QUERY_RESULTS: u32 = 100;
+pub const MAX_QUERY_RESULTS: u32 = 200;
 
 pub(crate) fn check_user_invariants(e: Env, user: Address) -> InvariantReport {
     let wrap_count: u32 = e
