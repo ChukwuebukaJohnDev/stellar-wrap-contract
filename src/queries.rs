@@ -1,6 +1,6 @@
 use soroban_sdk::{Address, Bytes, BytesN, Env, String};
 
-use crate::{ContractHealth, DataKey, TransferFeeConfig, WrapRecord};
+use crate::{ContractHealth, DataKey, InvariantReport, TransferFeeConfig, WrapRecord};
 
 pub(crate) fn get_wrap(e: Env, user: Address, period: u64) -> Option<WrapRecord> {
     e.storage().persistent().get(&DataKey::Wrap(user, period))
@@ -266,9 +266,14 @@ pub(crate) fn check_user_invariants(e: Env, user: Address) -> InvariantReport {
     } else {
         true
     };
+    InvariantReport {
+        wrap_count,
+        user_periods_len,
+        wrap_periods_len,
+        all_user_periods_live,
         latest_period,
         max_user_period,
         live_wraps_found,
-        balance,
+        balance: wrap_count as i128,
     }
 }
