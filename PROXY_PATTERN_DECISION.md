@@ -15,12 +15,12 @@ Implementing an EVM-style upgradeable proxy pattern is an **anti-pattern in Soro
 Instead, Soroban provides a **native, secure upgrade mechanism**:
 `env.deployer().update_current_contract_wasm(new_wasm_hash)`
 
-This native capability is already fully implemented in `src/admin.rs` (`upgrade` function). It allows the contract logic (WASM) to be updated in-place while retaining the identical Contract ID and all existing persistent/instance storage.
+This native capability is already fully implemented in `src/admin.rs` (`upgrade`function). It allows the contract logic (WASM) to be updated in-place while retaining the identical Contract ID and all existing persistent/instance storage.
 
 ## Batch Proxy for Atomic `mint_wrap`
 To satisfy the requirement of atomically batching multiple `mint_wrap` calls, a new `BatchProxy` contract has been introduced. This proxy is **not** an upgradeable proxy and does not alter the storage ownership model.
 
-- The `BatchProxy` receives a list of `mint_wrap` arguments and invokes the main contract's `mint_wrap` function sequentially via `env.invoke_contract()`.
+- The `BatchProxy` receives a list of `mint_wrap` arguments and invokes the main contract's `mint_wrap` function sequentially via `env.invoke_contract(`.
 - Because all invocations happen within a single Soroban transaction, they are atomic: if any call fails, the entire transaction reverts.
 - The `BatchProxy` maintains no state of its own; it simply forwards the calls to the canonical contract ID. This avoids any conflicts with the main contract's persistent storage.
 
