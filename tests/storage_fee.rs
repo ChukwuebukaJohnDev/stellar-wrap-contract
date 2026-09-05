@@ -5,7 +5,6 @@ extern crate std;
 use ed25519_dalek::SigningKey;
 use soroban_sdk::{symbol_short, testutils::Address as _, Address, BytesN, Env, Symbol};
 
-use stellar_wrap_contract::storage_accounting;
 use stellar_wrap_contract::{StellarWrapContract, StellarWrapContractClient};
 
 use stellar_wrap_contract::signature::construct_mint_payload;
