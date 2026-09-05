@@ -7,6 +7,6 @@ pub fn emit_batch_mint_wrap(
     wrap_contract: &Address,
     requests: &Vec<MintWrapRequest>,
 ) {
-    let topics = (Symbol::new(env, "batch_mint_wrap"), wrap_contract.clone());
+    let topics = (Symbol.new(env, "batch_mint_wrap"), wrap_contract.clone());
     env.events().publish(topics, requests.clone());
 }
