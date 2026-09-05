@@ -168,9 +168,25 @@ fn burn_matches_revoke_delta() {
     let addr = env.current_contract_address();
 
     // ── Revoke path ──
-    let sig_a = sign_mint(&env, &signing_key, &addr, &user, 202401u64, &archetype, &hash);
+    let sig_a = sign_mint(
+        &env,
+        &signing_key,
+        &addr,
+        &user,
+        202401u64,
+        &archetype,
+        &hash,
+    );
     client.mint_wrap(&user, &202401u64, &archetype, &hash, &1u32, &sig_a);
-    let sig_b = sign_mint(&env, &signing_key, &addr, &user, 202402u64, &archetype, &hash);
+    let sig_b = sign_mint(
+        &env,
+        &signing_key,
+        &addr,
+        &user,
+        202402u64,
+        &archetype,
+        &hash,
+    );
     client.mint_wrap(&user, &202402u64, &archetype, &hash, &1u32, &sig_b);
 
     let before_revoke = client.storage_bytes();
@@ -184,9 +200,25 @@ fn burn_matches_revoke_delta() {
     let full_revoke_end = client.storage_bytes();
 
     // ── Burn path (fresh mint) ──
-    let sig_c = sign_mint(&env, &signing_key, &addr, &user, 202403u64, &archetype, &hash);
+    let sig_c = sign_mint(
+        &env,
+        &signing_key,
+        &addr,
+        &user,
+        202403u64,
+        &archetype,
+        &hash,
+    );
     client.mint_wrap(&user, &202403u64, &archetype, &hash, &1u32, &sig_c);
-    let sig_d = sign_mint(&env, &signing_key, &addr, &user, 202404u64, &archetype, &hash);
+    let sig_d = sign_mint(
+        &env,
+        &signing_key,
+        &addr,
+        &user,
+        202404u64,
+        &archetype,
+        &hash,
+    );
     client.mint_wrap(&user, &202404u64, &archetype, &hash, &1u32, &sig_d);
 
     let before_burn = client.storage_bytes();
