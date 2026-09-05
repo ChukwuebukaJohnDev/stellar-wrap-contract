@@ -17,7 +17,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      RSTFLAGS: "-D warnings"
+      RUSTFLAGS: "-D warnings"
     steps:
     - uses: actions/checkout@v5
     - name: Install Rust
@@ -59,16 +59,16 @@ jobs:
           ~/.cargo/registry
           ~/.cargo/git
           ~/.cargo/bin
-        key: ${{ runner.os }}-cargo-tarpaulin-$({ hashFiles('**/Cargo.lock') })
+        key: ${{ runner.os }}-cargo-tarpaulin-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
-          ${ { runner.os }}-cargo-tarpaulin-
+          ${{ runner.os }}-cargo-tarpaulin-
       
     - name: Install cargo-tarpaulin
       # Only install if not already cached.  --locked ensures the exact
       # version published in Cargo.lock (or the tarpaulin registry entry) is
       # used, giving reproducible installs across runs.
       run: |
-        if ! command -v cargo-tarpaulin &&> /dev/null; then
+        if ! command -v cargo-tarpaulin >/dev/null 2>&1; then
           cargo install cargo-tarpaulin --locked
         fi
       
