@@ -3,21 +3,21 @@ extern crate std;
 use soroban_sdk::testutils::Address as _;
 use soroban_sdk::{vec, Address, Env, Symbol, Vec};
 
-use crate::{abol_contract, BatchProxy, BatchProxyClient};
+use crate::{BatchProxy, BatchProxyClient};
 
 mod mock_wrap {
     use soroban_sdk::{contract, contractimpl, Address, Env, Symbol, Vec};
 
-    #_contract]
+    #[contract]
     pub struct MockWrap;
 
-    #_contractimpl]
+    #[contractimpl]
     impl MockWrap {
         pub fn mint_wrap(env: Env, recipient: Address, amount: i128) {
             if env
                 .storage()
                 .instance()
-                .get:<i128>(&Symbol::new(&env, "fail"))
+                .get::<i128>(&Symbol::new(&env, "fail"))
                 == Some(amount)
             {
                 panic!("forced failure");
@@ -39,7 +39,7 @@ mod mock_wrap {
         }
 
         pub fn minted(env: Env) -> Vec<(Address, i128)> {
-            let empty: Vec<(Address, i128> = Vec::new(&env);
+            let empty: Vec<(Address, i128)> = Vec::new(&env);
             env.storage()
                 .instance()
                 .get(&Symbol::new(&env, "minted"))
@@ -65,7 +65,7 @@ fn create_recipients(env: &Env, count: u32) -> (Vec<Address>, Vec<i128>) {
     (recipients, amounts)
 }
 
-[#test]
+#[test]
 fn test_batch_mint_wrap_succeeds() {
     let (env, proxy_id, mock_id) = setup();
     let (recipients, amounts) = create_recipients(&env, 2);
@@ -82,7 +82,7 @@ fn test_batch_mint_wrap_succeeds() {
     assert_eq!(minted.get(1).unwrap().1, amounts.get(1).unwrap());
 }
 
-[#test]
+#[test]
 fn test_batch_mint_wrap_empty_succeeds() {
     let (env, proxy_id, mock_id) = setup();
     let recipients: Vec<Address> = Vec::new(&env);
@@ -95,18 +95,18 @@ fn test_batch_mint_wrap_empty_succeeds() {
     assert_eq!(mock_client.minted().len(), 0);
 }
 
-[#test]
+#[test]
 #[should_panic(expected = "recipients and amounts length mismatch")]
 fn test_batch_mint_wrap_length_mismatch_panics() {
     let (env, proxy_id, mock_id) = setup();
     let (recipients, _) = create_recipients(&env, 2);
-    let amounts = vec!([&env", 10_i128]);
+    let amounts = vec![&env, 10_i128];
 
     let proxy_client = BatchProxyClient::new(&env, &proxy_id);
     proxy_client.batch_mint_wrap(&mock_id, &recipients, &amounts);
 }
 
-[#test]
+#[test]
 fn test_batch_mint_wrap_atomic_rollback_on_failure() {
     let (env, proxy_id, mock_id) = setup();
     let (recipients, amounts) = create_recipients(&env, 2);
